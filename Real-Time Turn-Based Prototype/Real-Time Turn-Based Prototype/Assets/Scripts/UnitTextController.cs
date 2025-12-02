@@ -10,7 +10,18 @@ public class UnitTextController : MonoBehaviour
     //public GameObject characterName;
     public TMP_Text nameText;
     public TMP_Text descText;
+
+    //Stats
+    public GameObject statsText;
+    public TMP_Text hpText;
+    public TMP_Text apText;
+    public TMP_Text spText;
+    public TMP_Text movementText;
+    public TMP_Text specialNameTextStats;
+    public TMP_Text specialCostText;
+    public TMP_Text attackText;
     public bool showText = false;
+    public bool showStats = false;
 
     //attributes for menu that appears when selecintg unit
     public GameObject actionText;
@@ -28,6 +39,7 @@ public class UnitTextController : MonoBehaviour
         characterText.SetActive(false);
         actionText.SetActive(false);
         specialText.SetActive(false);
+        statsText.SetActive(false);
     }
 
     // Update is called once per frame
@@ -57,12 +69,28 @@ public class UnitTextController : MonoBehaviour
         {
             specialText.SetActive(false);
         }
+        if (showStats)
+        { 
+            statsText.SetActive(true);
+        }
+        else
+        {
+            statsText.SetActive(false);
+        }
     }
 
     public void UpdateText(GameObject unit)
     {
-        nameText.text = unit.GetComponent<CharacterEntityController>().characterName;
-        descText.text = unit.GetComponent<CharacterEntityController>().description;
+        CharacterEntityController cet = unit.GetComponent<CharacterEntityController>();
+        nameText.text = cet.characterName;
+        descText.text = cet.description;
+        hpText.text = Mathf.FloorToInt(cet.currentHealth) + "/" + cet.maxHealth;
+        apText.text = Mathf.FloorToInt(cet.currentAP) + "/" + cet.maxAP;
+        spText.text = Mathf.FloorToInt(cet.currentSP) + "/" + cet.maxSP;
+        movementText.text = Mathf.FloorToInt(cet.currentMovement) + "/" + cet.maxMovement;
+        attackText.text = Mathf.FloorToInt(cet.attack).ToString();
+        specialNameTextStats.text = cet.specialName;
+        specialCostText.text = "Cost: " + cet.spCost;
     }
 
     public void UpdateSpecialText(GameObject unit)

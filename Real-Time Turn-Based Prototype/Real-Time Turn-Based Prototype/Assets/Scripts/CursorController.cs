@@ -89,12 +89,14 @@ public class CursorController : MonoBehaviour
         {
             textController.UpdateText(targetObject);
             textController.showText = true;
+            textController.showStats = true;
         }
 
         //Hide Text
         if (targetObject == null)
         {
             textController.showText = false;
+            textController.showStats = false;
         }
 
         //Update special text for selected object
