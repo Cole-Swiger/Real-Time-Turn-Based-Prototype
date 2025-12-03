@@ -40,6 +40,7 @@ public class AOEAttackAction : MonoBehaviour, ISpecialAction
                     }
                 }
                 specialActive = false;
+                characterController.specialState = true;
                 currentTimer = attackTimer;
             }
             else
@@ -65,5 +66,6 @@ public class AOEAttackAction : MonoBehaviour, ISpecialAction
         Debug.Log("AOE Special Executed");
         characterController = controller;
         specialActive = true;
+        characterController.specialState = true;
     }
 }

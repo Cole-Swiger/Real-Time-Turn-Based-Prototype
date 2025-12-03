@@ -31,6 +31,7 @@ public class RangedAttackAction : MonoBehaviour, ISpecialAction
                 characterController.attackRange /= 100f;
                 characterController.currentSP -= characterController.spCost;
                 isBuffActive = false;
+                characterController.specialState = false;
             }
         }
     }
@@ -56,6 +57,7 @@ public class RangedAttackAction : MonoBehaviour, ISpecialAction
             characterController.attackRange *= 100f;
             characterController.InvokeAttack(targetObject.gameObject);
             isBuffActive = true;
+            characterController.specialState = true;
         }
         else
         {

@@ -31,12 +31,15 @@ public class CursorController : MonoBehaviour
 
     //Event System
     public EventSystem ev;
+    public Button moveButton;
+    public Button attackButton;
     public Button specialButton;
+    public Button[] buttonList;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+   
     }
 
     // Update is called once per frame
@@ -49,8 +52,8 @@ public class CursorController : MonoBehaviour
         } 
 
         SnapToObject();
+        CheckActiveButtons();
         CheckActiveObject();
-        CheckSpecialActive();
         CheckInput();
     }
 
@@ -143,6 +146,8 @@ public class CursorController : MonoBehaviour
             //Disable cursor
             currentMode = CursorMode.Disabled;
             selectedObject = targetObject;
+            //Reset default button to first interactable.
+            SetDefaultMenuButton();
             textController.showActionText = true;
         }
     }
@@ -206,7 +211,8 @@ public class CursorController : MonoBehaviour
             HideMovementRange();
             Vector3 selectedUnitPos = selectedObject.transform.position;
             transform.position = new Vector3(selectedUnitPos.x, transform.position.y, selectedUnitPos.z);
-            //Reopen action menu
+            //Reset and reopen action menu
+            SetDefaultMenuButton();
             textController.showActionText = true;
         }
     }
@@ -219,7 +225,8 @@ public class CursorController : MonoBehaviour
             selectedObject = null;
             textController.showActionText = false;
             //Reset selected button in menu
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            //ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             currentMode = CursorMode.Select;
         }
     }
@@ -233,7 +240,8 @@ public class CursorController : MonoBehaviour
             HideAttackRange();
             selectedObject = null;
             textController.showActionText = false;
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            //ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             currentMode = CursorMode.Select;
         }
 
@@ -248,7 +256,8 @@ public class CursorController : MonoBehaviour
             HideAttackRange();
             transform.position = new Vector3(selectedUnitPos.x, transform.position.y, selectedUnitPos.z);
             //Reset selected button in menu
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            //ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             //Reopen action menu
             textController.ShowActionText();
         }
@@ -275,7 +284,7 @@ public class CursorController : MonoBehaviour
             HideSpecialRange();
             selectedObject = null;
             textController.HideSpecialText();
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             currentMode = CursorMode.Select;
         }
 
@@ -289,31 +298,110 @@ public class CursorController : MonoBehaviour
             Vector3 selectedUnitPos = selectedObject.transform.position;
             transform.position = new Vector3(selectedUnitPos.x, transform.position.y, selectedUnitPos.z);
             //Reset selected button in menu
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             //Reopen action menu
             textController.HideSpecialText();
             textController.ShowActionText();
         }
     }
 
-    private void CheckSpecialActive()
+    //Checks if selected character has enough AP, SP, and Movement.
+    //Disables buttons if not enough stats.
+    private void CheckActiveButtons()
     {
-        if (selectedObject != null && specialButton.interactable)
+        //Check if object is selected
+        if (selectedObject != null)
         {
             CharacterEntityController cec = selectedObject.GetComponent<CharacterEntityController>();
-            if (cec.currentSP < cec.spCost)
+            //Move Button
+            if (moveButton.interactable)
             {
-                specialButton.interactable = false;
+                if (cec.currentMovement < cec.minMoveMeter)
+                {
+                    moveButton.interactable = false;
+                }
+            }
+            else
+            {
+                if (cec.currentMovement >= cec.minMoveMeter) 
+                {
+                    moveButton.interactable = true;
+                }
+            }
+            //Attak Button
+            if (attackButton.interactable)
+            {
+                if (cec.currentAP < cec.actionCost)
+                {
+                    attackButton.interactable = false;
+                }
+            }
+            else
+            {
+                if (cec.currentAP >= cec.actionCost)
+                {
+                    attackButton.interactable = true;
+                }
+            }
+            //Special Button
+            if (specialButton.interactable)
+            {
+                //Also disable button if special is currently active
+                if (cec.currentSP < cec.spCost || cec.specialState)
+                {
+                    specialButton.interactable = false;
+                }
+            }
+            else
+            {
+                if (cec.currentSP >= cec.spCost && !cec.specialState)
+                {
+                    specialButton.interactable = true;
+                }
             }
         }
-        else if (selectedObject != null && !specialButton.interactable) 
+    }
+
+    private void SetDefaultMenuButton()
+    {
+        //Check button states before setting default
+        CheckActiveButtons();
+
+        Selectable first = buttonList[0];
+        Selectable currentButton = null;
+        for (int i = 0; i < buttonList.Length - 1; i++)
         {
-            CharacterEntityController cec = selectedObject.GetComponent<CharacterEntityController>();
-            if (cec.currentSP >= cec.spCost)
+            currentButton = buttonList[i];
+            if (currentButton.interactable)
             {
-                specialButton.interactable = true;
+                // Set the found selectable as the active selection
+                EventSystem.current.SetSelectedGameObject(currentButton.gameObject);
+                break;
+            }
+            else
+            {
+
             }
         }
+
+        /*while (!currentButton.interactable)
+        {
+            currentButton = currentButton.FindSelectableOnDown();
+            Debug.Log("Below Button: " + currentButton.gameObject.name);
+
+            //All buttons inactive
+            if (currentButton == first)
+            {
+                currentButton = null;
+                break;
+            }
+        }
+
+        if (currentButton != null && currentButton.interactable)
+        {
+            // Set the found selectable as the active selection
+            EventSystem.current.SetSelectedGameObject(currentButton.gameObject);
+        }*/
     }
 
     public void ShowAttackRange()

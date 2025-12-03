@@ -32,6 +32,7 @@ public class BuffAction : MonoBehaviour, ISpecialAction
                 characterController.attack /= damageBuff;
                 characterController.apRegenRate /= regenBuff;
                 isBuffActive = false;
+                characterController.specialState = false;
                 return;
             }
             buffTimer -= Time.deltaTime;
@@ -49,6 +50,7 @@ public class BuffAction : MonoBehaviour, ISpecialAction
         characterController.currentSP -= characterController.spCost;
 
         isBuffActive = true;
+        characterController.specialState = true;
     }
 
     public void SetSPCost(CharacterEntityController character)

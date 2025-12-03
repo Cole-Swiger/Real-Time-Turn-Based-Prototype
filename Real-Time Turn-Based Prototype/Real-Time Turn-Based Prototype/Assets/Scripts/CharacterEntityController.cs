@@ -15,11 +15,12 @@ public class CharacterEntityController : MonoBehaviour
     public float currentAP;
     public float maxAP;
     public float apRegenRate;
+    public float actionCost = 20f;
 
     //SP for special abilities
     public float currentSP;
     public float maxSP;
-    public float SpRegenRate;
+    public float spRegenRate;
     //inherited special
     public MonoBehaviour specialActionBehaviour;
     private ISpecialAction special;
@@ -31,6 +32,7 @@ public class CharacterEntityController : MonoBehaviour
     //Movement
     public float currentMovement;
     public float maxMovement;
+    public float minMoveMeter = 4f;     //Amount currentMovement needs to be when moving from a resting position.
     public float movementRegenRate;
     public bool isMoving = false;
     private Vector3 previousPosition;
@@ -227,15 +229,10 @@ public class CharacterEntityController : MonoBehaviour
             attackTarget.GetComponent<CharacterEntityController>().currentHealth -= attack;
             Debug.Log("Target Current Health: " + attackTarget.GetComponent<CharacterEntityController>().currentHealth);
 
-            //Destroy target if hp is 0
-            /*
-            if (attackTarget.GetComponent<CharacterEntityController>().currentHealth <= 0)
-            {
-                Destroy(attackTarget);
-            }*/
-
             attackTimer = attackSpeed;
             attackState = false;
+            //Reduce AP for action
+            currentAP -= actionCost;
         }
     }
 
@@ -278,6 +275,16 @@ public class CharacterEntityController : MonoBehaviour
         {
             //currentMovement += Time.deltaTime * movementRegenRate;
             currentMovement = Mathf.Min(currentMovement + (Time.deltaTime * movementRegenRate), maxMovement);
+        }
+        //AP
+        if (currentAP < maxAP)
+        {
+            currentAP = Mathf.Min(currentAP + (Time.deltaTime * apRegenRate), maxAP);
+        }
+        //SP
+        if (currentSP < maxSP)
+        {
+            currentSP = Mathf.Min(currentSP + (Time.deltaTime * spRegenRate), maxSP);
         }
     }
 

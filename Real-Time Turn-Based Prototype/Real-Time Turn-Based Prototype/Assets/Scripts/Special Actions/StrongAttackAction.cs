@@ -33,6 +33,7 @@ public class StrongAttackAction : MonoBehaviour, ISpecialAction
                 characterController.attack /= damageMultiplier;
                 characterController.currentSP -= characterController.spCost;
                 isBuffActive = false;
+                characterController.specialState = false;
             }
         }   
     }
@@ -60,6 +61,7 @@ public class StrongAttackAction : MonoBehaviour, ISpecialAction
                 characterController.attack *= damageMultiplier;
                 characterController.InvokeAttack(targetObject.gameObject);
                 isBuffActive = true;
+                characterController.specialState = true;
             }
             else
             {

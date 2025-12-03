@@ -1122,6 +1122,10 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
+      propertyPath: apRegenRate
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: attackRange
       value: 3.5
       objectReference: {fileID: 0}
@@ -1136,6 +1140,10 @@ PrefabInstance:
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: maxMovement
       value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
+      propertyPath: spRegenRate
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: characterName
@@ -3182,7 +3190,13 @@ MonoBehaviour:
   selectedObject: {fileID: 0}
   currentMode: 0
   ev: {fileID: 87192513}
+  moveButton: {fileID: 501401544}
+  attackButton: {fileID: 852327917}
   specialButton: {fileID: 331449523}
+  buttonList:
+  - {fileID: 501401544}
+  - {fileID: 852327917}
+  - {fileID: 331449523}
 --- !u!1 &694646178
 GameObject:
   m_ObjectHideFlags: 0
@@ -5297,6 +5311,10 @@ PrefabInstance:
       value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
+      propertyPath: apRegenRate
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: attackRange
       value: 2.5
       objectReference: {fileID: 0}
@@ -5311,6 +5329,10 @@ PrefabInstance:
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: maxMovement
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
+      propertyPath: spRegenRate
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: characterName
@@ -6175,12 +6197,20 @@ PrefabInstance:
       value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
+      propertyPath: apRegenRate
+      value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       propertyPath: attackRange
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       propertyPath: maxMovement
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
+      propertyPath: spRegenRate
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       propertyPath: currentMovement
@@ -6288,12 +6318,20 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
+      propertyPath: apRegenRate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: attackRange
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: maxMovement
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
+      propertyPath: spRegenRate
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: currentMovement
