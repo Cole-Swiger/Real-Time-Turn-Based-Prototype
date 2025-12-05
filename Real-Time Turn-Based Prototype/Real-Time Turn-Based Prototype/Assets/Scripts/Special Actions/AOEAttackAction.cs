@@ -32,7 +32,7 @@ public class AOEAttackAction : MonoBehaviour, ISpecialAction
                 foreach (Collider hitCollider in hitColliders)
                 {
                     Debug.Log("Hit by attack: " + hitCollider.gameObject.name);
-                    if (hitCollider.gameObject.GetComponent<CharacterEntityController>() != null && hitCollider.gameObject.GetComponent<CharacterEntityController>() != characterController)
+                    if (hitCollider.gameObject.GetComponent<CharacterEntityController>() != null && hitCollider.gameObject != characterController.gameObject)
                     {
                         CharacterEntityController character = hitCollider.gameObject.GetComponent<CharacterEntityController>();
                         character.currentHealth -= damage;
@@ -40,7 +40,9 @@ public class AOEAttackAction : MonoBehaviour, ISpecialAction
                     }
                 }
                 specialActive = false;
-                characterController.specialState = true;
+                characterController.currentSP -= characterController.spCost;
+                characterController.specialState = false;
+                characterController.isMovable = true;
                 currentTimer = attackTimer;
             }
             else
@@ -67,5 +69,6 @@ public class AOEAttackAction : MonoBehaviour, ISpecialAction
         characterController = controller;
         specialActive = true;
         characterController.specialState = true;
+        characterController.isMovable = false;
     }
 }

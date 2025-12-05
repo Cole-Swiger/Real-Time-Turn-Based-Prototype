@@ -11,7 +11,7 @@ public class CursorController : MonoBehaviour
 
     //lock onto hovered object
     public float snapSpeed = 5f;
-    private GameObject targetObject;
+    [SerializeField] private GameObject targetObject;
     public UnitTextController textController;
 
     //Pick character action

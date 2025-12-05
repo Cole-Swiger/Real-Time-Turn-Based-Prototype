@@ -2993,6 +2993,48 @@ MonoBehaviour:
   damage: 4
   cost: 10
   attackTimer: 2.5
+--- !u!114 &635602433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635602420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b190f81491a3247428fa5daf967c5292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAiController
+  currentHealth: 100
+  maxHealth: 100
+  currentAP: 30
+  maxAP: 30
+  apRegenRate: 1.05
+  actionCost: 20
+  currentSP: 50
+  maxSP: 50
+  spRegenRate: 0.15
+  specialActionBehaviour: {fileID: 635602427}
+  spCost: 35
+  specialState: 0
+  specialName: 
+  specialDescription: 
+  isMovable: 1
+  currentMovement: 50
+  maxMovement: 50
+  minMoveMeter: 4
+  movementRegenRate: 1
+  isMoving: 0
+  speed: 6
+  minDistance: 3
+  attack: 8
+  attackRange: 3
+  attackSpeed: 4
+  attackTarget: {fileID: 0}
+  attackState: 0
+  characterName: Mr. Bad
+  description: I am a really bad guy. Fear me.
+  unitType: Enemy
 --- !u!1001 &643269174
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3186,6 +3228,7 @@ MonoBehaviour:
   size: 0
   speed: 10
   snapSpeed: 4
+  targetObject: {fileID: 0}
   textController: {fileID: 1921025128}
   selectedObject: {fileID: 0}
   currentMode: 0
@@ -5320,7 +5363,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: attackSpeed
-      value: 1
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2221455855031814204, guid: 2baf79635d6407142bb30e10f0c9b533, type: 3}
       propertyPath: description
@@ -6197,6 +6240,10 @@ PrefabInstance:
       value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       propertyPath: apRegenRate
       value: 1.05
       objectReference: {fileID: 0}
@@ -6206,7 +6253,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       propertyPath: maxMovement
-      value: 5
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       propertyPath: spRegenRate
@@ -6214,7 +6261,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       propertyPath: currentMovement
-      value: 5
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       propertyPath: movementRegenRate
@@ -6268,7 +6315,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3548369292132561336, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8616944717959090688, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
@@ -6284,6 +6332,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3933454595303845147, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 635602427}
+    - targetCorrespondingSourceObject: {fileID: 3933454595303845147, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 635602433}
   m_SourcePrefab: {fileID: 100100000, guid: 5fae7f3372ebd9f4480e6b1ec841f5e4, type: 3}
 --- !u!1001 &3093693891036738262
 PrefabInstance:

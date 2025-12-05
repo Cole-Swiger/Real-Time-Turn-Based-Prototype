@@ -23,23 +23,24 @@ public class CharacterEntityController : MonoBehaviour
     public float spRegenRate;
     //inherited special
     public MonoBehaviour specialActionBehaviour;
-    private ISpecialAction special;
+    protected ISpecialAction special;
     public float spCost;
     public bool specialState = false;
     public string specialName;
     public string specialDescription;
 
     //Movement
+    public bool isMovable = true;
     public float currentMovement;
     public float maxMovement;
     public float minMoveMeter = 4f;     //Amount currentMovement needs to be when moving from a resting position.
     public float movementRegenRate;
     public bool isMoving = false;
-    private Vector3 previousPosition;
+    protected Vector3 previousPosition;
     public float speed;
     public float minDistance = 5f;      //How close this object can get to another object when moving towards it
-    private Coroutine movementCoroutine; //Set which corotuine to run for movement
-    private Transform _lockOnTarget;   //Set when moving towards a target object
+    protected Coroutine movementCoroutine; //Set which corotuine to run for movement
+    protected Transform _lockOnTarget;   //Set when moving towards a target object
     public Transform lockOnTarget
     {
         get { return _lockOnTarget; }
@@ -48,11 +49,10 @@ public class CharacterEntityController : MonoBehaviour
             if (value != _lockOnTarget)
             {
                 _lockOnTarget = value;
-
-                if (_lockOnTarget != null)
-                {
-                    MoveTowardsTarget();
-                }
+            }
+            if (_lockOnTarget != null)
+            {
+                MoveTowardsTarget();
             }
         }
     }
@@ -72,7 +72,7 @@ public class CharacterEntityController : MonoBehaviour
         }
     }*/
     public float attackSpeed;
-    private float attackTimer;
+    protected float attackTimer;
     public GameObject attackTarget;
     public bool attackState = false;
 
@@ -82,7 +82,7 @@ public class CharacterEntityController : MonoBehaviour
     public string unitType;
 
     //Awake called before Start
-    private void Awake()
+    protected void Awake()
     {
         //Set up special action
         if (specialActionBehaviour != null)
@@ -94,7 +94,7 @@ public class CharacterEntityController : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         lockOnTarget = null;
         attackTimer = attackSpeed;
@@ -102,8 +102,11 @@ public class CharacterEntityController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
+        //Prevent movement if action is active
+        CheckMovable();
+
         //Check if attack is active and ready to fire
         if (attackState)
         {
@@ -117,7 +120,7 @@ public class CharacterEntityController : MonoBehaviour
         Regenerate();
     }
 
-    private void LateUpdate()
+    protected void LateUpdate()
     {
         //Subtract Movement meter
         float distanceMovedThisFrame = Vector3.Distance(transform.position, previousPosition);
@@ -153,15 +156,17 @@ public class CharacterEntityController : MonoBehaviour
     }
 
     //Move to cursor over time
-    private IEnumerator MoveToFixedLocation(Vector3 targetPos)
+    protected IEnumerator MoveToFixedLocation(Vector3 targetPos)
     {
         Vector3 targetHorPos = new Vector3(targetPos.x, transform.position.y, targetPos.z);
         isMoving = true;
 
         while (Vector3.Distance(transform.position, targetHorPos) > 0.01f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
-
+            if (isMovable)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
+            }
             // Wait until the next frame to re-evaluate the target's position
             yield return null;
         }
@@ -172,26 +177,29 @@ public class CharacterEntityController : MonoBehaviour
         Debug.Log("Reached fixed location.");
     }
 
-    //Move to object over time
-    private IEnumerator MoveToObject(Transform targetObject)
+    //Move to and follow object over time
+    protected IEnumerator MoveToObject(Transform targetObject)
     {
-        //isMoving = true;
         while (_lockOnTarget != null) {
-            //Vector3 currentHorPos = new Vector3(currentPos.x, , currentPos.z);
-            Vector3 currentTargetHorPos = new Vector3(targetObject.position.x, transform.position.y, targetObject.position.z);
+            //Prevent stutter stepping if object being followed is also moving.
+            if (isMovable && (isMoving || (!isMoving && currentMovement >= minMoveMeter))) {
+                Vector3 currentTargetHorPos = new Vector3(targetObject.position.x, transform.position.y, targetObject.position.z);
 
-            //Move close enough to the target
-            if (Vector3.Distance(transform.position, currentTargetHorPos) > minDistance)
-            {
-                isMoving = true;
-                transform.position = Vector3.MoveTowards(transform.position, currentTargetHorPos, speed * Time.deltaTime);
+                //Move close enough to the target
+                if (Vector3.Distance(transform.position, currentTargetHorPos) > minDistance)
+                {
+                    isMoving = true;
+                    transform.position = Vector3.MoveTowards(transform.position, currentTargetHorPos, speed * Time.deltaTime);
+                    Debug.Log("Follow Object");
+                }
+                //else don't move
+                else
+                {
+                    isMoving = false;
+                    Debug.Log("Reached Object or used all movement");
+                }
             }
-            //else don't move
-            else
-            {
-                isMoving = false;
-            }
-                yield return null;
+            yield return null;
         }
     }
 
@@ -211,7 +219,7 @@ public class CharacterEntityController : MonoBehaviour
         }
     }
 
-    private void CalculateAttack()
+    protected void CalculateAttack()
     {
         Debug.Log("Attack Timer: " + attackTimer);
         //Cancel Attack if target has been destroyed
@@ -236,7 +244,19 @@ public class CharacterEntityController : MonoBehaviour
         }
     }
 
-    private void CheckHealth()
+    protected void CheckMovable()
+    {
+        if (attackState)// || specialState) -- Special check done individually by each special since some allow movement
+        {
+            isMovable = false;
+        }
+        else
+        {
+            isMovable = true;
+        }
+    }
+
+    protected void CheckHealth()
     {
         if (currentHealth <=0)
         {
@@ -268,7 +288,7 @@ public class CharacterEntityController : MonoBehaviour
         return specialRange;
     }
 
-    private void Regenerate()
+    protected void Regenerate()
     {
         //Movement
         if (!isMoving && currentMovement < maxMovement)
