@@ -1,4 +1,5 @@
 using UnityEngine;
+
 //This class allows enemy units to automatically take actions
 public class EnemyAiController : CharacterEntityController
 {
@@ -18,6 +19,7 @@ public class EnemyAiController : CharacterEntityController
         base.Update();
     }
 
+    //Have enemy follow closest player unit
     private void LockOnPlayer()
     {
         if (lockOnTarget == null)
@@ -42,10 +44,10 @@ public class EnemyAiController : CharacterEntityController
                 }
             }
 
+            //lock on if valid target exists
             if (closestObject != null)
             {
                 lockOnTarget = closestObject.transform;
-                //MoveTowardsTarget();
             }
         }
         //Ensure enemy follows target if it moves after initial coroutine finishes
@@ -55,6 +57,7 @@ public class EnemyAiController : CharacterEntityController
         }
     }
 
+    //Decide which action the enemy should take
     private void CheckAction()
     {
         //Only perform action if none currently in progress

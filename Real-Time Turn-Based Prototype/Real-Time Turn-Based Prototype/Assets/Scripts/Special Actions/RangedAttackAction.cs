@@ -13,12 +13,6 @@ public class RangedAttackAction : MonoBehaviour, ISpecialAction
     private bool isBuffActive = false;
     private CharacterEntityController characterController;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -36,17 +30,21 @@ public class RangedAttackAction : MonoBehaviour, ISpecialAction
         }
     }
 
+    //Set spCost field on associated units
     public void SetSPCost(CharacterEntityController character)
     {
         character.spCost = cost;
     }
 
+    //Set special text fields for associated units
     public void SetSpecialText(CharacterEntityController character)
     {
         character.specialName = specialName;
         character.specialDescription = specialDescription;
     }
 
+    //Perform the special action
+    //Attacks unit at long range with increased attack stats
     public void Execute(CharacterEntityController controller, CharacterEntityController targetObject)
     {
         Debug.Log("Ranged Special Executed");

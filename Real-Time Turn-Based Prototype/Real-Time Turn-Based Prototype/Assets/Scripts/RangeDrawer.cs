@@ -1,6 +1,8 @@
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
+
+//Class used to draw range circles around units for movement and actions
 public class CircleDrawer : MonoBehaviour
 {
     public float radius = 1f;
@@ -31,6 +33,7 @@ public class CircleDrawer : MonoBehaviour
         }
     }
 
+    //Set the size of the circle
     public void SetRadius(float newRadius)
     {
         // Only redraw if the radius has actually changed
@@ -41,13 +44,13 @@ public class CircleDrawer : MonoBehaviour
         }
     }
 
-    // Call this function when the user selects the attack action
+    // Call this function when the user selects the action
     public void ShowRange()
     {
         line.enabled = true;
     }
 
-    // Call this function when the user deselects the attack action
+    // Call this function when the user deselects the action
     public void HideRange()
     {
         line.enabled = false;

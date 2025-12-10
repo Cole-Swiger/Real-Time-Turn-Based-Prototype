@@ -14,18 +14,13 @@ public class BuffAction : MonoBehaviour, ISpecialAction
     public bool isBuffActive = false;
     private CharacterEntityController characterController;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
         if (isBuffActive)
         {
             Debug.Log("Buff Timer: " + buffTimer);
+            //Reset buffs once timer ends
             if (buffTimer <= 0)
             {
                 characterController.speed /= speedBuff;
@@ -39,6 +34,8 @@ public class BuffAction : MonoBehaviour, ISpecialAction
         }
     }
 
+    //Perform the special action
+    //Buff unit's stats for a period of time
     public void Execute(CharacterEntityController controller, CharacterEntityController targetObject)
     {
         Debug.Log("Buff Special Executed");
@@ -53,11 +50,13 @@ public class BuffAction : MonoBehaviour, ISpecialAction
         characterController.specialState = true;
     }
 
+    //Set spCost field on associated units
     public void SetSPCost(CharacterEntityController character)
     {
         character.spCost = cost;
     }
 
+    //Set special text fields for associated units
     public void SetSpecialText(CharacterEntityController character)
     {
         character.specialName = specialName;

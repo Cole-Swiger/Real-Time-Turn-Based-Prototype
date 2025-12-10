@@ -1,3 +1,4 @@
+//Interface for Special Actions used by units
 public interface ISpecialAction
 {
     void Execute(CharacterEntityController character, CharacterEntityController targetObject);

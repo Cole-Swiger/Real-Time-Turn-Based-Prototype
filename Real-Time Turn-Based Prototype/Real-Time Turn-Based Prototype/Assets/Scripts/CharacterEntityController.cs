@@ -21,6 +21,8 @@ public class CharacterEntityController : MonoBehaviour
     public float currentSP;
     public float maxSP;
     public float spRegenRate;
+    [SerializeField] protected float spActionGain = 3f; //How much SP unit gains when landing attack
+    [SerializeField] protected float spDamageGain = 5f; //How much SP unit gains when taking damage from an attack
     //inherited special
     public MonoBehaviour specialActionBehaviour;
     protected ISpecialAction special;
@@ -59,27 +61,16 @@ public class CharacterEntityController : MonoBehaviour
 
     //Attack power, range, and speed
     public float attack;
-    //Redraw attack range circle if value changes
     public float attackRange;
-    /*{
-        get { return attackRange; }
-        set 
-        {
-            if (value != attackRange) { 
-                attackRange = value;
-                transform.GetComponentInChildren<CircleDrawer>().SetRadius(attackRange);
-            }
-        }
-    }*/
     public float attackSpeed;
-    protected float attackTimer;
+    protected float attackTimer;  //lower timer = quicker attack comes out
     public GameObject attackTarget;
     public bool attackState = false;
 
     //Character attributes
     public string characterName;
     public string description;
-    public string unitType;
+    public string unitType; //player or enemy
 
     //Awake called before Start
     protected void Awake()
@@ -98,6 +89,7 @@ public class CharacterEntityController : MonoBehaviour
     {
         lockOnTarget = null;
         attackTimer = attackSpeed;
+        //Used for movement calculations
         previousPosition = transform.position;
     }
 
@@ -122,7 +114,7 @@ public class CharacterEntityController : MonoBehaviour
 
     protected void LateUpdate()
     {
-        //Subtract Movement meter
+        //Subtract Movement meter based on distance travelled from previous frame
         float distanceMovedThisFrame = Vector3.Distance(transform.position, previousPosition);
         if (distanceMovedThisFrame > 0)
         {
@@ -131,7 +123,7 @@ public class CharacterEntityController : MonoBehaviour
         }
     }
 
-    //Move to cursor on click
+    //Move to cursor on Return/Enter
     public void MoveToCursor(Vector3 cursorPos)
     {
         Debug.Log("Move to cursor");
@@ -139,6 +131,7 @@ public class CharacterEntityController : MonoBehaviour
         Vector3 targetPos = new Vector3(cursorPos.x, transform.position.y, cursorPos.z);
         if (movementCoroutine != null)
         {
+            //Stop current movement coroutine and start new one
             StopCoroutine(movementCoroutine);
         }
         movementCoroutine = StartCoroutine(MoveToFixedLocation(targetPos));
@@ -150,14 +143,16 @@ public class CharacterEntityController : MonoBehaviour
         Debug.Log("Move to unit");
         if (movementCoroutine != null)
         {
+            //Stop current movement coroutine and start new one
             StopCoroutine(movementCoroutine);
         }
         movementCoroutine = StartCoroutine(MoveToObject(_lockOnTarget));
     }
 
-    //Move to cursor over time
+    //Coroutine used for moving to a specified location on the field
     protected IEnumerator MoveToFixedLocation(Vector3 targetPos)
     {
+        //target is cursor at time of hitting Return/Enter
         Vector3 targetHorPos = new Vector3(targetPos.x, transform.position.y, targetPos.z);
         isMoving = true;
 
@@ -177,7 +172,7 @@ public class CharacterEntityController : MonoBehaviour
         Debug.Log("Reached fixed location.");
     }
 
-    //Move to and follow object over time
+    //Coroutine used to move to target object, and follow that object when it moves
     protected IEnumerator MoveToObject(Transform targetObject)
     {
         while (_lockOnTarget != null) {
@@ -203,6 +198,7 @@ public class CharacterEntityController : MonoBehaviour
         }
     }
 
+    //Sets attack state to true if target is in range.
     public void InvokeAttack(GameObject targetObject)
     {
         //Check if target in range
@@ -211,7 +207,6 @@ public class CharacterEntityController : MonoBehaviour
             //Wait time for attack speed
             attackTarget = targetObject;
             attackState = true;
-            //currentAP -= 1f;
         }
         else
         {
@@ -219,6 +214,8 @@ public class CharacterEntityController : MonoBehaviour
         }
     }
 
+    //Counts down attack timer while attack state is active
+    //Perform attack once timer reaches 0
     protected void CalculateAttack()
     {
         Debug.Log("Attack Timer: " + attackTimer);
@@ -234,19 +231,28 @@ public class CharacterEntityController : MonoBehaviour
         //Do attack
         if (attackTimer <= 0)
         {
-            attackTarget.GetComponent<CharacterEntityController>().currentHealth -= attack;
+            CharacterEntityController cec = attackTarget.GetComponent<CharacterEntityController>();
+            cec.currentHealth -= attack;
             Debug.Log("Target Current Health: " + attackTarget.GetComponent<CharacterEntityController>().currentHealth);
+            //Give target SP for taking damage
+            cec.currentSP = Mathf.Min(cec.currentSP + cec.spDamageGain, cec.maxSP);
 
+            //Reset attack timer
             attackTimer = attackSpeed;
             attackState = false;
+
             //Reduce AP for action
             currentAP -= actionCost;
+            //Grant SP for landing attack
+            currentSP = Mathf.Min(currentSP + spActionGain, maxSP);
         }
     }
 
+    //Checks if object is currently able to move
     protected void CheckMovable()
     {
-        if (attackState)// || specialState) -- Special check done individually by each special since some allow movement
+        //Do not allow movement while attacking
+        if (attackState)        //Special check done individually by each special since some allow movement
         {
             isMovable = false;
         }
@@ -256,6 +262,7 @@ public class CharacterEntityController : MonoBehaviour
         }
     }
 
+    //Destroy object if health reaches 0
     protected void CheckHealth()
     {
         if (currentHealth <=0)
@@ -264,6 +271,7 @@ public class CharacterEntityController : MonoBehaviour
         }
     }
 
+    //Execute special action associated with this unit
     public void PerformSpecial(CharacterEntityController targetObject)
     {
         special?.Execute(this, targetObject);
@@ -288,6 +296,7 @@ public class CharacterEntityController : MonoBehaviour
         return specialRange;
     }
 
+    //Regenerate AP, Movement, and SP over time
     protected void Regenerate()
     {
         //Movement
@@ -307,12 +316,4 @@ public class CharacterEntityController : MonoBehaviour
             currentSP = Mathf.Min(currentSP + (Time.deltaTime * spRegenRate), maxSP);
         }
     }
-
-    /*
-    TODO:
-    In movement coroutines, stop moving if current movement reaches 0.
-    Fix issue where current movement keeps going down when unit reaches target it is following
-    AP, SP, and regeneration
-    Touch-ups and number balancing
-    */
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 public class StrongAttackAction : MonoBehaviour, ISpecialAction
 {
     //Attributes
-    //public float range = 1.5f;
     public string specialName = "Immense Strength";
     public string specialDescription = "Have your next attack do 3 times the normal damage.";
     public float damageMultiplier = 3f;
@@ -13,8 +12,6 @@ public class StrongAttackAction : MonoBehaviour, ISpecialAction
     public float range = 1f;
     public bool isBuffActive = false;
     public CharacterEntityController characterController;
-    //public float attackTimer = 3f;
-    //public GameObject targetObject;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -27,7 +24,7 @@ public class StrongAttackAction : MonoBehaviour, ISpecialAction
     {
         if (isBuffActive && characterController != null)
         {
-            //Reset attack
+            //Reset attack after action is performed
             if (!characterController.attackState)
             {
                 characterController.attack /= damageMultiplier;
@@ -38,17 +35,21 @@ public class StrongAttackAction : MonoBehaviour, ISpecialAction
         }   
     }
 
+    //Set spCost field on associated units
     public void SetSPCost(CharacterEntityController character)
     {
         character.spCost = cost;
     }
 
+    //Set special text fields for associated units
     public void SetSpecialText(CharacterEntityController character)
     {
         character.specialName = specialName;
         character.specialDescription = specialDescription;
     }
 
+    //Perform the special action
+    //Increase damage of next attack
     public void Execute(CharacterEntityController controller, CharacterEntityController targetObject)
     {
         Debug.Log("Strength Special Executed");

@@ -32,6 +32,7 @@ public class AOEAttackAction : MonoBehaviour, ISpecialAction
                 foreach (Collider hitCollider in hitColliders)
                 {
                     Debug.Log("Hit by attack: " + hitCollider.gameObject.name);
+                    //hit surrounding targets, ignoring self
                     if (hitCollider.gameObject.GetComponent<CharacterEntityController>() != null && hitCollider.gameObject != characterController.gameObject)
                     {
                         CharacterEntityController character = hitCollider.gameObject.GetComponent<CharacterEntityController>();
@@ -52,17 +53,21 @@ public class AOEAttackAction : MonoBehaviour, ISpecialAction
         }
     }
 
+    //Set spCost field on associated units
     public void SetSPCost(CharacterEntityController character)
     {
         character.spCost = cost;
     }
 
+    //Set special text fields for associated units
     public void SetSpecialText(CharacterEntityController character)
     {
         character.specialName = specialName;
         character.specialDescription = specialDescription;
     }
 
+    //Perform the special action
+    //Set a timer, then damage surrounding units
     public void Execute(CharacterEntityController controller, CharacterEntityController targetObject)
     {
         Debug.Log("AOE Special Executed");

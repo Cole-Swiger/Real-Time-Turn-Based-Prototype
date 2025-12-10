@@ -27,7 +27,6 @@ public class CursorController : MonoBehaviour
         Disabled
     }
     public CursorMode currentMode = CursorMode.Select;
-    //public bool disabled = false;
 
     //Event System
     public EventSystem ev;
@@ -36,15 +35,10 @@ public class CursorController : MonoBehaviour
     public Button specialButton;
     public Button[] buttonList;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-   
-    }
-
     // Update is called once per frame
     void Update()
     {
+        //Allow player to move cursor if not disabled
         if (currentMode != CursorMode.Disabled)
         {
             Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
@@ -57,34 +51,33 @@ public class CursorController : MonoBehaviour
         CheckInput();
     }
 
-    //Snap onto object
+    //Toggle targetObject
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Entity")) {
             targetObject = other.gameObject;
-            //textController.showText = true;
         }
-    }
-
+    }   
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Entity")) {
             targetObject = null;
-            //textController.showText = false;
         }
     }
 
+    //Snap onto object cursor is touching
     private void SnapToObject()
     {
         if (targetObject != null){
             Vector3 targetPosition = new Vector3(targetObject.transform.position.x,
                                                 transform.position.y,
                                                 targetObject.transform.position.z);
-
+            //Snap smoothly
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * snapSpeed);
         }
     }
 
+    //Update text that will be shown for the target and selected object, if applicable
     private void CheckActiveObject()
     {
         //Show text for highlighted object
@@ -109,9 +102,9 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    //Input response depends on current cursor mode
     private void CheckInput()
     {
-        //Input response depends on current mode
         //Select Mode
         if (currentMode == CursorMode.Select)
         {
@@ -138,6 +131,7 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    //Respond to user inputs while cursor is in Select mode
     private void CheckSelectInputs()
     {
         //Select Object and open action menu
@@ -152,6 +146,7 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    //Respond to user inputs while cursor is in Move mode
     private void CheckMoveInputs()
     {
         //Upodate Move Range each frame
@@ -217,6 +212,7 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    //Respond to user inputs while cursor is in Disabled mode
     private void CheckDisabledInputs()
     {
         //Cancel Select
@@ -225,12 +221,12 @@ public class CursorController : MonoBehaviour
             selectedObject = null;
             textController.showActionText = false;
             //Reset selected button in menu
-            //ev.SetSelectedGameObject(ev.firstSelectedGameObject);
             SetDefaultMenuButton();
             currentMode = CursorMode.Select;
         }
     }
 
+    //Respond to user inputs while cursor is in Attack mode
     private void CheckAttackInputs()
     {
         //Attack Selected Unit
@@ -256,13 +252,13 @@ public class CursorController : MonoBehaviour
             HideAttackRange();
             transform.position = new Vector3(selectedUnitPos.x, transform.position.y, selectedUnitPos.z);
             //Reset selected button in menu
-            //ev.SetSelectedGameObject(ev.firstSelectedGameObject);
             SetDefaultMenuButton();
             //Reopen action menu
             textController.ShowActionText();
         }
     }
 
+    //Respond to user inputs while cursor is in Special mode
     private void CheckSpecialInputs()
     {
         //Initiate special
@@ -362,6 +358,7 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    //Sets the default selected menu button to first one that is clickable (not disabled)
     private void SetDefaultMenuButton()
     {
         //Check button states before setting default
@@ -383,27 +380,9 @@ public class CursorController : MonoBehaviour
 
             }
         }
-
-        /*while (!currentButton.interactable)
-        {
-            currentButton = currentButton.FindSelectableOnDown();
-            Debug.Log("Below Button: " + currentButton.gameObject.name);
-
-            //All buttons inactive
-            if (currentButton == first)
-            {
-                currentButton = null;
-                break;
-            }
-        }
-
-        if (currentButton != null && currentButton.interactable)
-        {
-            // Set the found selectable as the active selection
-            EventSystem.current.SetSelectedGameObject(currentButton.gameObject);
-        }*/
     }
 
+    //Show range of unit's attack
     public void ShowAttackRange()
     {
         //Find selected object's child Attack Range object
@@ -412,6 +391,7 @@ public class CursorController : MonoBehaviour
         cd.ShowRange();
     }
 
+    //Show range of unit's movement
     public void ShowMovementRange()
     {
         //Find selected object's child Movement Range object
@@ -420,6 +400,7 @@ public class CursorController : MonoBehaviour
         cd.ShowRange();
     }
 
+    //Show range of unit's special
     public void ShowSpecialRange()
     {
         //Find selected object's child Special Range object
@@ -428,16 +409,19 @@ public class CursorController : MonoBehaviour
         cd.ShowRange();
     }
 
+    //Hide range of unit's attack
     public void HideAttackRange()
     {
         selectedObject.transform.Find("Attack Range").GetComponent<CircleDrawer>().HideRange();
     }
 
+    //Hide range of unit's movement
     public void HideMovementRange()
     {
         selectedObject.transform.Find("Movement Range").GetComponent<CircleDrawer>().HideRange();
     }
 
+    //Hide range of unit's special
     public void HideSpecialRange()
     {
         selectedObject.transform.Find("Special Range").GetComponent<CircleDrawer>().HideRange();
@@ -457,10 +441,4 @@ public class CursorController : MonoBehaviour
     {
         currentMode = CursorMode.Special;
     }
-
-    /*
-    TODO:
-    Add ranges and other limitations
-    Implement Regeneration
-    */
 }
