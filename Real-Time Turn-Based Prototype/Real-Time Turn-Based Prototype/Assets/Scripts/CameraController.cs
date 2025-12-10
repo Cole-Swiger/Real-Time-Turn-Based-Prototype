@@ -10,8 +10,6 @@ public class CameraController : MonoBehaviour
     //How far away camera should be from cursor
     public Vector3 offset;
     //Zoom camera in or out
-    //public Vector3 offsetZoomIn;
-    //public Vector3 offsetZoomOut;
 
     //Smooth camera movement
     public float smoothSpeed = 0.125f;
@@ -26,12 +24,6 @@ public class CameraController : MonoBehaviour
     public float[] zooms = {20f, 60f, 100f};
     public int zoomIndex = 1;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -41,15 +33,12 @@ public class CameraController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.I) && zoomIndex > 0)
         {
             zoomIndex--;
-            //Camera.main.fieldOfView = Mathf.Lerp(currentFov, zooms[zoomIndex], Time.deltaTime * zoomSpeed);
             Camera.main.fieldOfView = zooms[zoomIndex];
         }
-
         //zoom out
         if (Input.GetKeyDown(KeyCode.O) && zoomIndex < 2)
         {
             zoomIndex++;
-            //Camera.main.fieldOfView = Mathf.Lerp(currentFov, zooms[zoomIndex], Time.deltaTime * zoomSpeed);
             Camera.main.fieldOfView = zooms[zoomIndex];
         }
     }
@@ -60,12 +49,7 @@ public class CameraController : MonoBehaviour
         Vector3 viewportPoint = Camera.main.WorldToViewportPoint(cursor.position);
 
         //Move camera if cursor outside of dead zone
-        //if (!deadZone.Contains(viewportPoint))
-        //{
-            Vector3 nextPosition = cursor.position + offset;
-            //Vector3 smoothedPosition = Vector3.Lerp(transform.position, nextPosition, smoothSpeed);
-            //transform.position = smoothedPosition;
-            transform.position = Vector3.SmoothDamp(transform.position, nextPosition, ref velocity, smoothTime);
-        //}   
+        Vector3 nextPosition = cursor.position + offset;
+        transform.position = Vector3.SmoothDamp(transform.position, nextPosition, ref velocity, smoothTime);
     }
 }

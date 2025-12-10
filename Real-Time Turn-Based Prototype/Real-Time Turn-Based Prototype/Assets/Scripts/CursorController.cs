@@ -11,7 +11,7 @@ public class CursorController : MonoBehaviour
 
     //lock onto hovered object
     public float snapSpeed = 5f;
-    private GameObject targetObject;
+    [SerializeField] private GameObject targetObject;
     public UnitTextController textController;
 
     //Pick character action
@@ -27,21 +27,18 @@ public class CursorController : MonoBehaviour
         Disabled
     }
     public CursorMode currentMode = CursorMode.Select;
-    //public bool disabled = false;
 
     //Event System
     public EventSystem ev;
+    public Button moveButton;
+    public Button attackButton;
     public Button specialButton;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Button[] buttonList;
 
     // Update is called once per frame
     void Update()
     {
+        //Allow player to move cursor if not disabled
         if (currentMode != CursorMode.Disabled)
         {
             Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
@@ -49,39 +46,38 @@ public class CursorController : MonoBehaviour
         } 
 
         SnapToObject();
+        CheckActiveButtons();
         CheckActiveObject();
-        CheckSpecialActive();
         CheckInput();
     }
 
-    //Snap onto object
+    //Toggle targetObject
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Entity")) {
             targetObject = other.gameObject;
-            //textController.showText = true;
         }
-    }
-
+    }   
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Entity")) {
             targetObject = null;
-            //textController.showText = false;
         }
     }
 
+    //Snap onto object cursor is touching
     private void SnapToObject()
     {
         if (targetObject != null){
             Vector3 targetPosition = new Vector3(targetObject.transform.position.x,
                                                 transform.position.y,
                                                 targetObject.transform.position.z);
-
+            //Snap smoothly
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * snapSpeed);
         }
     }
 
+    //Update text that will be shown for the target and selected object, if applicable
     private void CheckActiveObject()
     {
         //Show text for highlighted object
@@ -106,9 +102,9 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    //Input response depends on current cursor mode
     private void CheckInput()
     {
-        //Input response depends on current mode
         //Select Mode
         if (currentMode == CursorMode.Select)
         {
@@ -135,6 +131,7 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    //Respond to user inputs while cursor is in Select mode
     private void CheckSelectInputs()
     {
         //Select Object and open action menu
@@ -143,10 +140,13 @@ public class CursorController : MonoBehaviour
             //Disable cursor
             currentMode = CursorMode.Disabled;
             selectedObject = targetObject;
+            //Reset default button to first interactable.
+            SetDefaultMenuButton();
             textController.showActionText = true;
         }
     }
 
+    //Respond to user inputs while cursor is in Move mode
     private void CheckMoveInputs()
     {
         //Upodate Move Range each frame
@@ -206,11 +206,13 @@ public class CursorController : MonoBehaviour
             HideMovementRange();
             Vector3 selectedUnitPos = selectedObject.transform.position;
             transform.position = new Vector3(selectedUnitPos.x, transform.position.y, selectedUnitPos.z);
-            //Reopen action menu
+            //Reset and reopen action menu
+            SetDefaultMenuButton();
             textController.showActionText = true;
         }
     }
 
+    //Respond to user inputs while cursor is in Disabled mode
     private void CheckDisabledInputs()
     {
         //Cancel Select
@@ -219,11 +221,12 @@ public class CursorController : MonoBehaviour
             selectedObject = null;
             textController.showActionText = false;
             //Reset selected button in menu
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             currentMode = CursorMode.Select;
         }
     }
 
+    //Respond to user inputs while cursor is in Attack mode
     private void CheckAttackInputs()
     {
         //Attack Selected Unit
@@ -233,7 +236,8 @@ public class CursorController : MonoBehaviour
             HideAttackRange();
             selectedObject = null;
             textController.showActionText = false;
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            //ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             currentMode = CursorMode.Select;
         }
 
@@ -248,12 +252,13 @@ public class CursorController : MonoBehaviour
             HideAttackRange();
             transform.position = new Vector3(selectedUnitPos.x, transform.position.y, selectedUnitPos.z);
             //Reset selected button in menu
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             //Reopen action menu
             textController.ShowActionText();
         }
     }
 
+    //Respond to user inputs while cursor is in Special mode
     private void CheckSpecialInputs()
     {
         //Initiate special
@@ -275,7 +280,7 @@ public class CursorController : MonoBehaviour
             HideSpecialRange();
             selectedObject = null;
             textController.HideSpecialText();
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             currentMode = CursorMode.Select;
         }
 
@@ -289,33 +294,95 @@ public class CursorController : MonoBehaviour
             Vector3 selectedUnitPos = selectedObject.transform.position;
             transform.position = new Vector3(selectedUnitPos.x, transform.position.y, selectedUnitPos.z);
             //Reset selected button in menu
-            ev.SetSelectedGameObject(ev.firstSelectedGameObject);
+            SetDefaultMenuButton();
             //Reopen action menu
             textController.HideSpecialText();
             textController.ShowActionText();
         }
     }
 
-    private void CheckSpecialActive()
+    //Checks if selected character has enough AP, SP, and Movement.
+    //Disables buttons if not enough stats.
+    private void CheckActiveButtons()
     {
-        if (selectedObject != null && specialButton.interactable)
+        //Check if object is selected
+        if (selectedObject != null)
         {
             CharacterEntityController cec = selectedObject.GetComponent<CharacterEntityController>();
-            if (cec.currentSP < cec.spCost)
+            //Move Button
+            if (moveButton.interactable)
             {
-                specialButton.interactable = false;
+                if (cec.currentMovement < cec.minMoveMeter)
+                {
+                    moveButton.interactable = false;
+                }
             }
-        }
-        else if (selectedObject != null && !specialButton.interactable) 
-        {
-            CharacterEntityController cec = selectedObject.GetComponent<CharacterEntityController>();
-            if (cec.currentSP >= cec.spCost)
+            else
             {
-                specialButton.interactable = true;
+                if (cec.currentMovement >= cec.minMoveMeter) 
+                {
+                    moveButton.interactable = true;
+                }
+            }
+            //Attak Button
+            if (attackButton.interactable)
+            {
+                if (cec.currentAP < cec.actionCost)
+                {
+                    attackButton.interactable = false;
+                }
+            }
+            else
+            {
+                if (cec.currentAP >= cec.actionCost)
+                {
+                    attackButton.interactable = true;
+                }
+            }
+            //Special Button
+            if (specialButton.interactable)
+            {
+                //Also disable button if special is currently active
+                if (cec.currentSP < cec.spCost || cec.specialState)
+                {
+                    specialButton.interactable = false;
+                }
+            }
+            else
+            {
+                if (cec.currentSP >= cec.spCost && !cec.specialState)
+                {
+                    specialButton.interactable = true;
+                }
             }
         }
     }
 
+    //Sets the default selected menu button to first one that is clickable (not disabled)
+    private void SetDefaultMenuButton()
+    {
+        //Check button states before setting default
+        CheckActiveButtons();
+
+        Selectable first = buttonList[0];
+        Selectable currentButton = null;
+        for (int i = 0; i < buttonList.Length - 1; i++)
+        {
+            currentButton = buttonList[i];
+            if (currentButton.interactable)
+            {
+                // Set the found selectable as the active selection
+                EventSystem.current.SetSelectedGameObject(currentButton.gameObject);
+                break;
+            }
+            else
+            {
+
+            }
+        }
+    }
+
+    //Show range of unit's attack
     public void ShowAttackRange()
     {
         //Find selected object's child Attack Range object
@@ -324,6 +391,7 @@ public class CursorController : MonoBehaviour
         cd.ShowRange();
     }
 
+    //Show range of unit's movement
     public void ShowMovementRange()
     {
         //Find selected object's child Movement Range object
@@ -332,6 +400,7 @@ public class CursorController : MonoBehaviour
         cd.ShowRange();
     }
 
+    //Show range of unit's special
     public void ShowSpecialRange()
     {
         //Find selected object's child Special Range object
@@ -340,16 +409,19 @@ public class CursorController : MonoBehaviour
         cd.ShowRange();
     }
 
+    //Hide range of unit's attack
     public void HideAttackRange()
     {
         selectedObject.transform.Find("Attack Range").GetComponent<CircleDrawer>().HideRange();
     }
 
+    //Hide range of unit's movement
     public void HideMovementRange()
     {
         selectedObject.transform.Find("Movement Range").GetComponent<CircleDrawer>().HideRange();
     }
 
+    //Hide range of unit's special
     public void HideSpecialRange()
     {
         selectedObject.transform.Find("Special Range").GetComponent<CircleDrawer>().HideRange();
@@ -369,10 +441,4 @@ public class CursorController : MonoBehaviour
     {
         currentMode = CursorMode.Special;
     }
-
-    /*
-    TODO:
-    Add ranges and other limitations
-    Implement Regeneration
-    */
 }

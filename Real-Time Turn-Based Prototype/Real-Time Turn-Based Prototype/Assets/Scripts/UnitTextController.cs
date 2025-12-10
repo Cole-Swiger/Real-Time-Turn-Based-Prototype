@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class UnitTextController : MonoBehaviour
 {
     public GameObject characterText;
-    //public GameObject characterName;
     public TMP_Text nameText;
     public TMP_Text descText;
 
@@ -33,9 +33,13 @@ public class UnitTextController : MonoBehaviour
     public TMP_Text specialDescText;
     public bool showSpecialText;
 
+    //Controls Menu
+    public GameObject controlsMenu;
+
     // Start is called before the first frame update
     void Start()
     {
+        //hide all unit and action menus
         characterText.SetActive(false);
         actionText.SetActive(false);
         specialText.SetActive(false);
@@ -43,6 +47,7 @@ public class UnitTextController : MonoBehaviour
     }
 
     // Update is called once per frame
+    //Determine when to show and hide different menus
     void Update()
     {
         if (showText)
@@ -77,8 +82,21 @@ public class UnitTextController : MonoBehaviour
         {
             statsText.SetActive(false);
         }
+
+        //show/hide controls menu
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            controlsMenu.SetActive(!controlsMenu.activeSelf);
+        }
+
+        //return to main menu
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene("Start");
+        }
     }
 
+    //Update the text values for the unit menu
     public void UpdateText(GameObject unit)
     {
         CharacterEntityController cet = unit.GetComponent<CharacterEntityController>();
@@ -93,37 +111,34 @@ public class UnitTextController : MonoBehaviour
         specialCostText.text = "Cost: " + cet.spCost;
     }
 
+    //Update the text values for the special menu
     public void UpdateSpecialText(GameObject unit)
     {
         specialNameText.text = unit.GetComponent<CharacterEntityController>().specialName;
         specialDescText.text = unit.GetComponent<CharacterEntityController>().specialDescription;
     }
 
+    //Methods to show/hide menus
     public void ShowDescriptionText()
     {
         showText = true;
     }
-
     public void HideDescriptionText()
     {
         showText = false;
     }
-
     public void ShowActionText()
     {
         showActionText = true;
     }
-
     public void HideActionText()
     {
         showActionText = false;
     }
-
     public void ShowSpecialText() 
     { 
         showSpecialText = true;
     }
-
     public void HideSpecialText()
     {
         showSpecialText = false;
